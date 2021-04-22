@@ -38,7 +38,7 @@ module.exports = (app) => {
             return callback(new Error('Wrong extension type'));
         }
         callback(null, true);}})
-        .single('file');
+        .single.upload('file');
 
     app.post('/rexmat', function(req, res) {
         var exceltojson;
