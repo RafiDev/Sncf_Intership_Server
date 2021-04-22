@@ -26,9 +26,12 @@ module.exports = (app) => {
         s3: s3,
         bucket: 'sncf-intership',
         acl:'',
+        metadata: (req, file, cb) => {
+            cb(null, {fieldName: fiel.fieldName});
+        },
         key: (req, file, cb) => {
             console.log(file);
-            cb(null, file.originalname);
+            cb(null, Date.now()+file.originalname);
         }
     }), fileFilter : function(req, file, callback) { 
         if (['xls', 'xlsx'].indexOf(file.originalname.split('.')[file.originalname.split('.').length-1]) === -1) {
