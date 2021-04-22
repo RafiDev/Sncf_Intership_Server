@@ -7,8 +7,11 @@
   },
   "dependencies": {
     "aws-sdk": "^2.890.0",
+    "body-parser": "^1.19.0",
+    "concurrently": "^6.0.2",
     "cookie-parser": "~1.4.3",
     "cors": "^2.8.4",
+    "cors-anywhere": "^0.4.4",
     "debug": "~2.6.9",
     "express": "~4.16.0",
     "express-fileupload": "^0.4.0",
