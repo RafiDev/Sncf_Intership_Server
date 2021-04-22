@@ -1,8 +1,16 @@
 module.exports = (app) => {
+    var aws = require('aws-sdk');
     var multer = require('multer');
+    var multerS3 = require('multer-s3'); /*"https://sncf-intership.fra1.digitaloceanspaces.com"*/
     var xlstojson = require("xls-to-json-lc");
     var xlsxtojson = require("xlsx-to-json-lc");
 
+    var spacesEndpoint = new aws.Endpoint('fra1.digitaloceanspaces.com Copy');
+    var s3 = new aws.S3({
+        endpoint: spacesEndpoint
+    });
+    
+    /*
     var storage = multer.diskStorage({
         destination: function (req, file, cb) {
             cb(null, './uploads/')
@@ -12,8 +20,17 @@ module.exports = (app) => {
             cb(null, file.fieldname + '-' + datetimestamp + '.' + file.originalname.split('.')[file.originalname.split('.').length -1])
         }
     });
+    */
 
-    var upload = multer({ storage: storage, fileFilter : function(req, file, callback) { 
+    var upload = multer({ storage: multerS3({
+        s3: s3,
+        bucket: 'sncf-intership',
+        acl:'',
+        key: (req, file, cb) => {
+            console.log(file);
+            cb(null, file.originalname);
+        }
+    }), fileFilter : function(req, file, callback) { 
         if (['xls', 'xlsx'].indexOf(file.originalname.split('.')[file.originalname.split('.').length-1]) === -1) {
             return callback(new Error('Wrong extension type'));
         }
@@ -40,6 +57,7 @@ module.exports = (app) => {
                     output: null, 
                     lowerCaseHeaders:true
                 }, function(err, result) {
+                    
                         if (err) {
                             return res.json({error_code: 1, err_desc: err, data: null});
                         }
