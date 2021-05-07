@@ -1,4 +1,4 @@
-const { ok } = require('assert');
+const getInfoStateRames = require('../function/rexmat/getStateRames');
 
 module.exports = (app) => {
     var aws = require('aws-sdk');
@@ -48,59 +48,31 @@ module.exports = (app) => {
                     
                     var rames = [];
                     var libelle = [];
-                    var systeme = [];
                     var rameLibelle = [];
-
-                    var arrCBM = [];
-                    var arrSET = [];
-
+                    var systeme = [];
+                    
                     var systemeH1 = [];
                     var systemeH2 = [];
                     var systemeH3 = [];
                     var systemeH4 = [];
 
+                    var otherSysteme = [];
+                    var nbOtherSysteme = 0;
 
                     var H1 = 0;
                     var H2 = 0;
                     var H3 = 0;
                     var H4 = 0;
 
-                    var systemeTT = 0;
-                    var CompteurSET = 0;
-                    var CompteurCBM = 0;
-
                     var SET_H1 = 0;
                     var SET_H2 = 0;
                     var SET_H3 = 0;
                     var SET_H4 = 0;
 
-
                     var CBM_H1 = 0;
                     var CBM_H2 = 0;
                     var CBM_H3 = 0;
                     var CBM_H4 = 0;
-
-                    var BS = 0;
-                    var CLIMATISATION = 0;
-                    var COMPRESSEUR = 0;
-                    var DetectionIncendie = 0;
-                    var CCTV = 0;
-                    var TCMS = 0;
-                    var TRACTION = 0;
-                    var ATESS = 0;
-                    var TDB = 0;
-                    var EMCO = 0;
-                    var EQS = 0;
-                    var PORTE = 0;
-                    var FREIN = 0;
-                    var ComptagePassagers = 0;
-                    var AFFICHEUR = 0;
-                    var LecteurBadge = 0;
-                    var ECLAIRAGE = 0;
-                    var PUPITRE = 0;
-                    var SONO = 0;
-                    var STMAutonome = 0;
-                    var COUPLEUR = 0;
 
                     var BS_H1 = 0;
                     var CLIMATISATION_H1 = 0;
@@ -190,82 +162,88 @@ module.exports = (app) => {
                     var STMAutonome_H4 = 0;
                     var COUPLEUR_H4 = 0;
 
-                    for (var i = 0; i != result.length; i++) {
+                    for (let i = 0; i != result.length; i++) {
                         libelle.push(result[i]['Libellé de l\'événement']);
                         rames.push(result[i]['Engin impactée']);
                         rameLibelle.push(rames[i] + ' - ' + libelle[i]);
                     }
 
-                    for (var i = 0; i != libelle.length; i++) {
-                        if (libelle[i].split(' - ')[0].split('_')[2].localeCompare("P400") == 0) {
-                            systeme.push(libelle[i].slice(0, 18));
-                        } else if (libelle[i].split(' - ')[0].split('_')[2].localeCompare("P4000") == 0) {
-                            systeme.push(libelle[i].slice(0, 20));
+                    for (let i = 0; i != libelle.length; i++) {
+                        if (libelle[i].includes('_') == false) {
+                            otherSysteme.push(libelle[i]);
+                            nbOtherSysteme++;
                         } else {
-                            systeme.push(libelle[i].split(' - ')[0]);
+                            let tmp = libelle[i].split(' - ')[0].split('_')[2];
+                            if (tmp ==='P4000') {
+                                systeme.push(libelle[i].slice(0, 23));
+                            } else if (libelle[i].split(' - ')[0].split('_')[2] === 'P400') {
+                                systeme.push(libelle[i].slice(0, 21));
+                            } else {
+                                systeme.push(libelle[i].split(' - ')[0]);
+                            }
                         }
-                    }
+                    } 
 
-                    for (var i = 0; i != systeme.length; i++) {
-                        if (systeme[i].split('_')[1].localeCompare('H1') == 0) {
+                    for (let i = 0; i != systeme.length; i++) {
+                        if (systeme[i].split('_')[1] === 'H1') {
                             systemeH1.push(systeme[i]);
                             H1++;
-                        } else if (systeme[i].split('_')[1].localeCompare('H2') == 0) {
+                        } else if (systeme[i].split('_')[1] === 'H2') {
                             systemeH2.push(systeme[i]);
                             H2++;
-                        } else if (systeme[i].split('_')[1].localeCompare('H3') == 0) {
+                        } else if (systeme[i].split('_')[1] === 'H3') {
                             systemeH3.push(systeme[i]);
                             H3++;
-                        } if (systeme[i].split('_')[1].localeCompare('H4') == 0) {
+                        } else if (systeme[i].split('_')[1] === 'H4') {
                             systemeH4.push(systeme[i]);
                             H4++;
                         }
                     }
 
                     for (var i = 0; i != systemeH1.length; i++) {
-                        if (systemeH1[i].split('_')[0].localeCompare('SET') == 0) {
-                            if (systemeH1[i].split('_')[2].localeCompare('BS') == 0) {
+                        if (systemeH1[i].split('_')[0] === 'SET') {
+                            if (systemeH1[i].split('_')[2] === 'BS') {
                                 BS_H1++;
-                            } else if (systemeH1[i].split('_')[2].localeCompare('CLIMATISATION') == 0) {
+                            } else if (systemeH1[i].split('_')[2] === 'CLIMATISATION') {
                                 CLIMATISATION_H1++;
-                            } else if (systemeH1[i].split('_')[2].localeCompare('COMPRESSEUR') == 0) {
+                            } else if (systemeH1[i].split('_')[2] === 'COMPRESSEUR') {
                                 COMPRESSEUR_H1++;
-                            } else if (systemeH1[i].split('_')[2].localeCompare('Detection') == 0 && systemeH1[i].split('_')[3].localeCompare('incendie') == 0) {
+                            } else if (systemeH1[i].split('_')[2] === 'Detection' && systemeH1[i].split('_')[3] ==='incendie') {
                                 DetectionIncendie_H1++;
-                            } else if (systemeH1[i].split('_')[2].localeCompare('CCTV') == 0) {
+                            } else if (systemeH1[i].split('_')[2] === 'CCTV') {
                                 CCTV_H1++;
-                            } else if (systemeH1[i].split('_')[2].localeCompare('TCMS') == 0) {
+                            } else if (systemeH1[i].split('_')[2] === 'TCMS') {
                                 TCMS_H1++;
-                            } else if (systemeH1[i].split('_')[2].localeCompare('TRACTION') == 0) {
+                            } else if (systemeH1[i].split('_')[2] === 'TRACTION') {
                                 TRACTION_H1++;
-                            } else if (systemeH1[i].split('_')[2].localeCompare('ATESS') == 0) {
+                            } else if (systemeH1[i].split('_')[2] === 'ATESS') {
                                 ATESS_H1++;
-                            } else if (systemeH1[i].split('_')[2].localeCompare('TDB') == 0) {
+                            } else if (systemeH1[i].split('_')[2] === 'TDB') {
                                 TDB_H1++;
-                            } else if (systemeH1[i].split('_')[2].localeCompare('EMCO') == 0) {
+                            } else if (systemeH1[i].split('_')[2] === 'EMCO') {
                                 EMCO_H1++;
-                            } else if (systemeH1[i].split('_')[2].localeCompare('EQS') == 0) {
+                            } else if (systemeH1[i].split('_')[2] === 'EQS') {
                                 EQS_H1++;
-                            } else if (systemeH1[i].split('_')[2].localeCompare('PORTE') == 0) {
+                            } else if (systemeH1[i].split('_')[2] === 'PORTE') {
                                 PORTE_H1++;
-                            } else if (systemeH1[i].split('_')[2].localeCompare('FREIN') == 0) {
+                            } else if (systemeH1[i].split('_')[2] === 'FREIN') {
                                 FREIN_H1++;
-                            } else if (systemeH1[i].split('_')[2].localeCompare('ComptagePassagers') == 0) {
+                            } else if (systemeH1[i].split('_')[2] === 'ComptagePassagers') {
                                 ComptagePassagers_H1++;
-                            } else if (systemeH1[i].split('_')[2].localeCompare('AFFICHEUR') == 0) {
+                            } else if (systemeH1[i].split('_')[2] === 'AFFICHEUR') {
                                 AFFICHEUR_H1++;
-                            } else if (systemeH1[i].split('_')[2].localeCompare('LECTEUR') == 0 && systemeH1[i].split('_')[3].localeCompare('BADGE') == 0) {
+                            } else if (systemeH1[i].split('_')[2] === 'LECTEUR' && systemeH1[i].split('_')[3] === 'BADGE') {
                                 LecteurBadge_H1++;
-                            } else if (systemeH1[i].split('_')[2].localeCompare('ECLAIRAGE') == 0) {
+                            } else if (systemeH1[i].split('_')[2] === 'ECLAIRAGE') {
                                 ECLAIRAGE_H1++;
-                            } else if (systemeH1[i].split('_')[2].localeCompare('PUPITRE') == 0) {
+                            } else if (systemeH1[i].split('_')[2] === 'PUPITRE') {
                                 PUPITRE_H1++;
-                            } else if (systemeH1[i].split('_')[2].localeCompare('SONO') == 0) {
+                            } else if (systemeH1[i].split('_')[2] === 'SONO') {
                                 SONO_H1++;
-                            } else if (systemeH1[i].split('_')[2].localeCompare('STMAutonome') == 0) {
-                                STMAutonome_H1++;
-                            } else if (systemeH1[i].split('_')[2].localeCompare('COUPLEUR') == 0) {
+                            } else if (systemeH1[i].split('_')[2] === 'COUPLEUR') {
                                 COUPLEUR_H1++;
+                            } else if (systemeH1[i].split('_')[2] === 'STMAutonome') {
+                                STMAutonome_H1++;
                             }
                             SET_H1++;
                         } else {
@@ -274,100 +252,100 @@ module.exports = (app) => {
                     }
 
                     for (var i = 0; i != systemeH2.length; i++) {
-                        if (systemeH2[i].split('_')[0].localeCompare('SET') == 0) { 
-                            if (systemeH2[i].split('_')[2].localeCompare('BS') == 0) {
+                        if (systemeH2[i].split('_')[0] === 'SET') {
+                            if (systemeH2[i].split('_')[2] === 'BS') {
                                 BS_H2++;
-                            } else if (systemeH2[i].split('_')[2].localeCompare('CLIMATISATION') == 0) {
+                            } else if (systemeH2[i].split('_')[2] === 'CLIMATISATION') {
                                 CLIMATISATION_H2++;
-                            } else if (systemeH2[i].split('_')[2].localeCompare('COMPRESSEUR') == 0) {
-                                COMPRESSEUR_H1++;
-                            } else if (systemeH2[i].split('_')[2].localeCompare('Detection') == 0 && systemeH2[i].split('_')[3].localeCompare('incendie') == 0) {
+                            } else if (systemeH2[i].split('_')[2] === 'COMPRESSEUR') {
+                                COMPRESSEUR_H2++;
+                            } else if (systemeH2[i].split('_')[2] === 'Detection' && systemeH2[i].split('_')[3] ==='incendie') {
                                 DetectionIncendie_H2++;
-                            } else if (systemeH2[i].split('_')[2].localeCompare('CCTV') == 0) {
+                            } else if (systemeH2[i].split('_')[2] === 'CCTV') {
                                 CCTV_H2++;
-                            } else if (systemeH2[i].split('_')[2].localeCompare('TCMS') == 0) {
+                            } else if (systemeH2[i].split('_')[2] === 'TCMS') {
                                 TCMS_H2++;
-                            } else if (systemeH2[i].split('_')[2].localeCompare('TRACTION') == 0) {
+                            } else if (systemeH2[i].split('_')[2] === 'TRACTION') {
                                 TRACTION_H2++;
-                            } else if (systemeH2[i].split('_')[2].localeCompare('ATESS') == 0) {
+                            } else if (systemeH2[i].split('_')[2] === 'ATESS') {
                                 ATESS_H2++;
-                            } else if (systemeH2[i].split('_')[2].localeCompare('TDB') == 0) {
+                            } else if (systemeH2[i].split('_')[2] === 'TDB') {
                                 TDB_H2++;
-                            } else if (systemeH2[i].split('_')[2].localeCompare('EMCO') == 0) {
+                            } else if (systemeH2[i].split('_')[2] === 'EMCO') {
                                 EMCO_H2++;
-                            } else if (systemeH2[i].split('_')[2].localeCompare('EQS') == 0) {
+                            } else if (systemeH2[i].split('_')[2] === 'EQS') {
                                 EQS_H2++;
-                            } else if (systemeH2[i].split('_')[2].localeCompare('PORTE') == 0) {
+                            } else if (systemeH2[i].split('_')[2] === 'PORTE') {
                                 PORTE_H2++;
-                            } else if (systemeH2[i].split('_')[2].localeCompare('FREIN') == 0) {
+                            } else if (systemeH2[i].split('_')[2] === 'FREIN') {
                                 FREIN_H2++;
-                            } else if (systemeH2[i].split('_')[2].localeCompare('ComptagePassagers') == 0) {
+                            } else if (systemeH2[i].split('_')[2] === 'ComptagePassagers') {
                                 ComptagePassagers_H2++;
-                            } else if (systemeH2[i].split('_')[2].localeCompare('AFFICHEUR') == 0) {
+                            } else if (systemeH2[i].split('_')[2] === 'AFFICHEUR') {
                                 AFFICHEUR_H2++;
-                            } else if (systemeH2[i].split('_')[2].localeCompare('LECTEUR') == 0 && systemeH2[i].split('_')[3].localeCompare('BADGE') == 0) {
+                            } else if (systemeH2[i].split('_')[2] === 'LECTEUR' && systemeH2[i].split('_')[3] === 'BADGE') {
                                 LecteurBadge_H2++;
-                            } else if (systemeH2[i].split('_')[2].localeCompare('ECLAIRAGE') == 0) {
+                            } else if (systemeH2[i].split('_')[2] === 'ECLAIRAGE') {
                                 ECLAIRAGE_H2++;
-                            } else if (systemeH2[i].split('_')[2].localeCompare('PUPITRE') == 0) {
+                            } else if (systemeH2[i].split('_')[2] === 'PUPITRE') {
                                 PUPITRE_H2++;
-                            } else if (systemeH2[i].split('_')[2].localeCompare('SONO') == 0) {
+                            } else if (systemeH2[i].split('_')[2] === 'SONO') {
                                 SONO_H2++;
-                            } else if (systemeH2[i].split('_')[2].localeCompare('STMAutonome') == 0) {
-                                STMAutonome_H2++;
-                            } else if (systemeH2[i].split('_')[2].localeCompare('COUPLEUR') == 0) {
+                            } else if (systemeH2[i].split('_')[2] === 'COUPLEUR') {
                                 COUPLEUR_H2++;
+                            } else if (systemeH2[i].split('_')[2] === 'STMAutonome') {
+                                STMAutonome_H2++;
                             }
                             SET_H2++;
                         } else {
                             CBM_H2++;
                         }
-                    }    
+                    }
 
                     for (var i = 0; i != systemeH3.length; i++) {
-                        if (systemeH3[i].split('_')[0].localeCompare('SET') == 0) {
-                            if (systemeH3[i].split('_')[2].localeCompare('BS') == 0) {
+                        if (systemeH3[i].split('_')[0] === 'SET') {
+                            if (systemeH3[i].split('_')[2] === 'BS') {
                                 BS_H3++;
-                            } else if (systemeH3[i].split('_')[2].localeCompare('CLIMATISATION') == 0) {
+                            } else if (systemeH3[i].split('_')[2] === 'CLIMATISATION') {
                                 CLIMATISATION_H3++;
-                            } else if (systemeH3[i].split('_')[2].localeCompare('COMPRESSEUR') == 0) {
+                            } else if (systemeH3[i].split('_')[2] === 'COMPRESSEUR') {
                                 COMPRESSEUR_H3++;
-                            } else if (systemeH3[i].split('_')[2].localeCompare('Detection') == 0 && systemeH3[i].split('_')[3].localeCompare('incendie') == 0) {
+                            } else if (systemeH3[i].split('_')[2] === 'Detection' && systemeH3[i].split('_')[3] ==='incendie') {
                                 DetectionIncendie_H3++;
-                            } else if (systemeH3[i].split('_')[2].localeCompare('CCTV') == 0) {
+                            } else if (systemeH3[i].split('_')[2] === 'CCTV') {
                                 CCTV_H3++;
-                            } else if (systemeH3[i].split('_')[2].localeCompare('TCMS') == 0) {
+                            } else if (systemeH3[i].split('_')[2] === 'TCMS') {
                                 TCMS_H3++;
-                            } else if (systemeH3[i].split('_')[2].localeCompare('TRACTION') == 0) {
+                            } else if (systemeH3[i].split('_')[2] === 'TRACTION') {
                                 TRACTION_H3++;
-                            } else if (systemeH3[i].split('_')[2].localeCompare('ATESS') == 0) {
+                            } else if (systemeH3[i].split('_')[2] === 'ATESS') {
                                 ATESS_H3++;
-                            } else if (systemeH3[i].split('_')[2].localeCompare('TDB') == 0) {
+                            } else if (systemeH3[i].split('_')[2] === 'TDB') {
                                 TDB_H3++;
-                            } else if (systemeH3[i].split('_')[2].localeCompare('EMCO') == 0) {
+                            } else if (systemeH3[i].split('_')[2] === 'EMCO') {
                                 EMCO_H3++;
-                            } else if (systemeH3[i].split('_')[2].localeCompare('EQS') == 0) {
+                            } else if (systemeH3[i].split('_')[2] === 'EQS') {
                                 EQS_H3++;
-                            } else if (systemeH3[i].split('_')[2].localeCompare('PORTE') == 0) {
+                            } else if (systemeH3[i].split('_')[2] === 'PORTE') {
                                 PORTE_H3++;
-                            } else if (systemeH3[i].split('_')[2].localeCompare('FREIN') == 0) {
+                            } else if (systemeH3[i].split('_')[2] === 'FREIN') {
                                 FREIN_H3++;
-                            } else if (systemeH3[i].split('_')[2].localeCompare('ComptagePassagers') == 0) {
+                            } else if (systemeH3[i].split('_')[2] === 'ComptagePassagers') {
                                 ComptagePassagers_H3++;
-                            } else if (systemeH3[i].split('_')[2].localeCompare('AFFICHEUR') == 0) {
+                            } else if (systemeH3[i].split('_')[2] === 'AFFICHEUR') {
                                 AFFICHEUR_H3++;
-                            } else if (systemeH3[i].split('_')[2].localeCompare('LECTEUR') == 0 && systemeH3[i].split('_')[3].localeCompare('BADGE') == 0) {
+                            } else if (systemeH3[i].split('_')[2] === 'LECTEUR' && systemeH3[i].split('_')[3] === 'BADGE') {
                                 LecteurBadge_H3++;
-                            } else if (systemeH3[i].split('_')[2].localeCompare('ECLAIRAGE') == 0) {
+                            } else if (systemeH3[i].split('_')[2] === 'ECLAIRAGE') {
                                 ECLAIRAGE_H3++;
-                            } else if (systemeH3[i].split('_')[2].localeCompare('PUPITRE') == 0) {
+                            } else if (systemeH3[i].split('_')[2] === 'PUPITRE') {
                                 PUPITRE_H3++;
-                            } else if (systemeH3[i].split('_')[2].localeCompare('SONO') == 0) {
+                            } else if (systemeH3[i].split('_')[2] === 'SONO') {
                                 SONO_H3++;
-                            } else if (systemeH3[i].split('_')[2].localeCompare('STMAutonome') == 0) {
-                                STMAutonome_H3++;
-                            } else if (systemeH3[i].split('_')[2].localeCompare('COUPLEUR') == 0) {
+                            } else if (systemeH3[i].split('_')[2] === 'COUPLEUR') {
                                 COUPLEUR_H3++;
+                            } else if (systemeH3[i].split('_')[2] === 'STMAutonome') {
+                                STMAutonome_H3++;
                             }
                             SET_H3++;
                         } else {
@@ -376,49 +354,49 @@ module.exports = (app) => {
                     }
 
                     for (var i = 0; i != systemeH4.length; i++) {
-                        if (systemeH4[i].split('_')[0].localeCompare('SET') == 0) {
-                            if (systemeH4[i].split('_')[2].localeCompare('BS') == 0) {
+                        if (systemeH4[i].split('_')[0] === 'SET') {
+                            if (systemeH4[i].split('_')[2] === 'BS') {
                                 BS_H4++;
-                            } else if (systemeH4[i].split('_')[2].localeCompare('CLIMATISATION') == 0) {
+                            } else if (systemeH4[i].split('_')[2] === 'CLIMATISATION') {
                                 CLIMATISATION_H4++;
-                            } else if (systemeH4[i].split('_')[2].localeCompare('COMPRESSEUR') == 0) {
+                            } else if (systemeH4[i].split('_')[2] === 'COMPRESSEUR') {
                                 COMPRESSEUR_H4++;
-                            } else if (systemeH4[i].split('_')[2].localeCompare('Detection') == 0 && systemeH4[i].split('_')[3].localeCompare('incendie') == 0) {
+                            } else if (systemeH4[i].split('_')[2] === 'Detection' && systemeH4[i].split('_')[3] ==='incendie') {
                                 DetectionIncendie_H4++;
-                            } else if (systemeH4[i].split('_')[2].localeCompare('CCTV') == 0) {
+                            } else if (systemeH4[i].split('_')[2] === 'CCTV') {
                                 CCTV_H4++;
-                            } else if (systemeH4[i].split('_')[2].localeCompare('TCMS') == 0) {
+                            } else if (systemeH4[i].split('_')[2] === 'TCMS') {
                                 TCMS_H4++;
-                            } else if (systemeH4[i].split('_')[2].localeCompare('TRACTION') == 0) {
+                            } else if (systemeH4[i].split('_')[2] === 'TRACTION') {
                                 TRACTION_H4++;
-                            } else if (systemeH4[i].split('_')[2].localeCompare('ATESS') == 0) {
+                            } else if (systemeH4[i].split('_')[2] === 'ATESS') {
                                 ATESS_H4++;
-                            } else if (systemeH4[i].split('_')[2].localeCompare('TDB') == 0) {
+                            } else if (systemeH4[i].split('_')[2] === 'TDB') {
                                 TDB_H4++;
-                            } else if (systemeH4[i].split('_')[2].localeCompare('EMCO') == 0) {
+                            } else if (systemeH4[i].split('_')[2] === 'EMCO') {
                                 EMCO_H4++;
-                            } else if (systemeH4[i].split('_')[2].localeCompare('EQS') == 0) {
+                            } else if (systemeH4[i].split('_')[2] === 'EQS') {
                                 EQS_H4++;
-                            } else if (systemeH4[i].split('_')[2].localeCompare('PORTE') == 0) {
+                            } else if (systemeH4[i].split('_')[2] === 'PORTE') {
                                 PORTE_H4++;
-                            } else if (systemeH4[i].split('_')[2].localeCompare('FREIN') == 0) {
+                            } else if (systemeH4[i].split('_')[2] === 'FREIN') {
                                 FREIN_H4++;
-                            } else if (systemeH4[i].split('_')[2].localeCompare('ComptagePassagers') == 0) {
+                            } else if (systemeH4[i].split('_')[2] === 'ComptagePassagers') {
                                 ComptagePassagers_H4++;
-                            } else if (systemeH4[i].split('_')[2].localeCompare('AFFICHEUR') == 0) {
+                            } else if (systemeH4[i].split('_')[2] === 'AFFICHEUR') {
                                 AFFICHEUR_H4++;
-                            } else if (systemeH4[i].split('_')[2].localeCompare('LECTEUR') == 0 && systemeH4[i].split('_')[3].localeCompare('BADGE') == 0) {
+                            } else if (systemeH4[i].split('_')[2] === 'LECTEUR' && systemeH4[i].split('_')[3] === 'BADGE') {
                                 LecteurBadge_H4++;
-                            } else if (systemeH4[i].split('_')[2].localeCompare('ECLAIRAGE') == 0) {
+                            } else if (systemeH4[i].split('_')[2] === 'ECLAIRAGE') {
                                 ECLAIRAGE_H4++;
-                            } else if (systemeH4[i].split('_')[2].localeCompare('PUPITRE') == 0) {
+                            } else if (systemeH4[i].split('_')[2] === 'PUPITRE') {
                                 PUPITRE_H4++;
-                            } else if (systemeH4[i].split('_')[2].localeCompare('SONO') == 0) {
+                            } else if (systemeH4[i].split('_')[2] === 'SONO') {
                                 SONO_H4++;
-                            } else if (systemeH4[i].split('_')[2].localeCompare('STMAutonome') == 0) {
-                                STMAutonome_H4++;
-                            } else if (systemeH4[i].split('_')[2].localeCompare('COUPLEUR') == 0) {
+                            } else if (systemeH4[i].split('_')[2] === 'COUPLEUR') {
                                 COUPLEUR_H4++;
+                            } else if (systemeH4[i].split('_')[2] === 'STMAutonome') {
+                                STMAutonome_H4++;
                             }
                             SET_H4++;
                         } else {
@@ -426,86 +404,6 @@ module.exports = (app) => {
                         }
                     }
                     
-                    for (var i = 0; i != systeme.length; i++) {
-                        if (systeme[i].split('_')[0].localeCompare('CBM') == 0) {
-                            arrCBM.push(systeme[i].slice(7));
-                        } else if (systeme[i].split('_')[0].localeCompare('SET') == 0) {
-                            if (systeme[i].split('_')[2].localeCompare('P400') == 0) {
-                                arrSET.push("P400");
-                            } else if (systeme[i].split('_')[2].localeCompare('P4000') == 0) {
-                                arrSET.push("P4000");
-                            } else {
-                                arrSET.push(systeme[i].slice(7));
-                            }
-                        }
-                        systemeTT++;
-                    }
-
-                    for (var i = 0; i != arrCBM.length; i++) {
-                        CompteurCBM++;
-                    }
-
-                    for (var i = 0; i != arrSET.length; i++) {
-                        if (arrSET[i].localeCompare('BS') == 0) {
-                            BS++;
-                        } else if (arrSET[i].localeCompare('CLIMATISATION') == 0) {
-                            CLIMATISATION++;
-                        } else if (arrSET[i].localeCompare('COMPRESSEUR') == 0) {
-                            COMPRESSEUR++;
-                        } else if (arrSET[i].localeCompare('Detection_incendie') == 0) {
-                            DetectionIncendie++;
-                        } else if (arrSET[i].localeCompare('CCTV') == 0) {
-                            CCTV++;
-                        } else if (arrSET[i].localeCompare('TCMS') == 0) {
-                            TCMS++;
-                        } else if (arrSET[i].localeCompare('TRACTION') == 0) {
-                            TRACTION++;
-                        } else if (arrSET[i].localeCompare('ATESS') == 0) {
-                            ATESS++;
-                        } else if (arrSET[i].localeCompare('TDB') == 0) {
-                            TDB++;
-                        } else if (arrSET[i].localeCompare('EMCO') == 0) {
-                            EMCO++;
-                        } else if (arrSET[i].localeCompare('EQS') == 0) {
-                            EQS++;
-                        } else if (arrSET[i].localeCompare('PORTE') == 0) {
-                            PORTE++;
-                        } else if (arrSET[i].localeCompare('FREIN') == 0) {
-                            FREIN++;
-                        } else if (arrSET[i].localeCompare('ComptagePassagers') == 0) {
-                            ComptagePassagers++;
-                        } else if (arrSET[i].localeCompare('AFFICHEUR') == 0) {
-                            AFFICHEUR++;
-                        } else if (arrSET[i].localeCompare('LECTEUR_BADGE') == 0) {
-                            LecteurBadge++;
-                        } else if (arrSET[i].localeCompare('ECLAIRAGE') == 0) {
-                            ECLAIRAGE++;
-                        } else if (arrSET[i].localeCompare('PUPITRE') == 0) {
-                            PUPITRE++;
-                        } else if (arrSET[i].localeCompare('SONO') == 0) {
-                            SONO++;
-                        } else if (arrSET[i].localeCompare('STMAutonome') == 0) {
-                            STMAutonome++;
-                        } else if (arrSET[i].localeCompare('COUPLEUR') == 0) {
-                            COUPLEUR++;
-                        }
-                        CompteurSET++;
-                    }
-
-                    var dataSET = {
-                        "BS": BS, "Climatisation": CLIMATISATION, 
-                        "Detection Incendie": DetectionIncendie, "CCTV": CCTV, 
-                        "TCMS": TCMS, "Traction": TRACTION, 
-                        "ATESS": ATESS, "TDB": TDB, 
-                        "EMCO": EMCO, "EQS": EQS, 
-                        "Porte": PORTE, "Frein": FREIN, 
-                        "Comptage Passagers": ComptagePassagers, "Afficheur": AFFICHEUR, 
-                        "Lecteur Badge": LecteurBadge, "Eclairage": ECLAIRAGE, 
-                        "Pupitre": PUPITRE, "Sonorisation": SONO,
-                        "Compresseur": COMPRESSEUR, "STMAutonome": STMAutonome,
-                        "Coupleur": COUPLEUR
-                    };
-
                     var data_H1 = {
                         "BS": BS_H1, "Climatisation": CLIMATISATION_H1, 
                         "Detection Incendie": DetectionIncendie_H1, "CCTV": CCTV_H1, 
@@ -565,29 +463,29 @@ module.exports = (app) => {
                         "Coupleur": COUPLEUR_H4,
                         "Nombre de SET en H4": SET_H4, "Nombre de CBM en H4": CBM_H4
                     };
-                    
+
                     var data = {
-                        "Nombre de système total": systemeTT,
                         "Hiérarchie de la flotte": {
                             "H1": H1,
                             "H2": H2,
                             "H3": H3,
                             "H4": H4
                         },
-                        "Nombre de signalement par hiérarchie": {
+                        "Signalement par hiérarchie": {
                             "systeme en H1": data_H1,
                             "systeme en H2": data_H2,
                             "systeme en H3": data_H3,
                             "systeme en H4": data_H4
                         },
-                        "Type de signalement": {
-                            "Nombre total de SET": CompteurSET,
-                            "SET": dataSET,
-                            "Nombre total de CBM": CompteurCBM,
+                        "Statut par hiérarchie": getInfoStateRames.getInfoStateRames(result),
+                        "Autre libelle": {
+                            "liste des autres systèmes": otherSysteme,
+                            "nombre des autres systèmes": nbOtherSysteme - 1
                         },
-                        "liste signalement rexmat": rameLibelle
+                        "Liste signalement rexmat": rameLibelle
                     };
-                    return response.json({data});
+                    //console.log(data);
+                    response.json(data);
                 });
             })
         });
