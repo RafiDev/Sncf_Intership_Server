@@ -54,7 +54,7 @@ exports.getInfoStateRames = function (array) {
         } else if (libelle[i].split('_')[1] === 'H1' && statut[i] ===  'Rame à vigiler') {
             nbRameAVigiler_H1++;
         }
-        H1++;
+        H1 = nbAnalyseRex_H1 + nbCloturé_H1 + nbEnCours_H1 + nbAttPieces_H1 + nbATraiter_H1 + nbRameAVigiler_H1;
     }
 
     for (let i = 0; i != statut.length && i != libelle.length; i++) {
@@ -70,8 +70,8 @@ exports.getInfoStateRames = function (array) {
             nbATraiter_H2++;
         } else if (libelle[i].split('_')[1] === 'H2' && statut[i] ===  'Rame à vigiler') {
             nbRameAVigiler_H2++;
-        }
-        H2++;
+        } 
+        H2 = nbAnalyseRex_H2 + nbCloturé_H2 + nbEnCours_H2 + nbAttPieces_H2 + nbATraiter_H2 + nbRameAVigiler_H2;
     }
 
     for (let i = 0; i != statut.length && i != libelle.length; i++) {
@@ -87,8 +87,8 @@ exports.getInfoStateRames = function (array) {
             nbATraiter_H3++;
         } else if (libelle[i].split('_')[1] === 'H3' && statut[i] ===  'Rame à vigiler') {
             nbRameAVigiler_H3++;
-        }
-        H3++;
+        } 
+        H3 = nbAnalyseRex_H3 + nbCloturé_H3 + nbEnCours_H3 + nbAttPieces_H3 + nbATraiter_H3 + nbRameAVigiler_H3;
     }
 
     for (let i = 0; i != statut.length && i != libelle.length; i++) {
@@ -105,7 +105,7 @@ exports.getInfoStateRames = function (array) {
         } else if (libelle[i].split('_')[1] === 'H4' && statut[i] ===  'Rame à vigiler') {
             nbRameAVigiler_H4++;
         }
-        H4++;
+        H4 = nbAnalyseRex_H4 + nbCloturé_H4 + nbEnCours_H4 + nbAttPieces_H4 + nbATraiter_H4 + nbRameAVigiler_H4;
     }
 
     var data_statut = {

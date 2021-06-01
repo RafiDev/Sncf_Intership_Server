@@ -1,4 +1,5 @@
 const getInfoStateRames = require('../function/rexmat/getStateRames');
+const Rexmat = require('../models/rexmatModel');
 
 module.exports = (app) => {
     var aws = require('aws-sdk');
@@ -39,7 +40,7 @@ module.exports = (app) => {
                 filePath.close();
                 console.log('Download Completed');
                 xlstojson({
-                    input:  filePath.path,
+                    input: filePath.path,
                     output: null,
                     lowerCaseHeader: false
                 }, (err, result) => {
@@ -484,10 +485,40 @@ module.exports = (app) => {
                         },
                         "Liste signalement rexmat": rameLibelle
                     };
-                    //console.log(data);
+                    const rexmat = new Rexmat();
+                    rexmat.type = req.body.time;
+                    rexmat.date = req.body.dateStart.slice(0, 15).concat(' to ', req.body.dateEnd.slice(0, 15));
+                    rexmat.data = data;
+                    rexmat.save()
                     response.json(data);
                 });
             })
+        });
+    });
+
+    app.get('/getDataRexmatWeek', (req, res) => {
+        Rexmat.find({ type: 'semaine' }, (err, result) => {
+            if (err) res.send(err);
+            let data = JSON.stringify(result);
+            fs.writeFile(`${downloadsFolder}/rexmatWeek.json`, data, (err) => {
+                if (err) throw err;
+                    console.log('Data written to file');
+            });
+            console.log(result);
+            //res.send(result);
+        });
+    });
+
+    app.get('/getDataRexmatMonth', (req, res) => {
+        Rexmat.find({ type: 'mois' }, (err, result) => {
+            if (err) res.send(err);
+            let data = JSON.stringify(result);
+            fs.writeFile('rexmatMonth.json', data, (err) => {
+                if (err) throw err;
+                    console.log('Data written to file');
+            });
+            console.log(result);
+            //res.send(result);
         });
     });
 }

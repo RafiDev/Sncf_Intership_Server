@@ -4,10 +4,16 @@ const logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 var createError = require("http-errors");
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
+const uri = "mongodb+srv://Yohann:8i9DY6kOryOTtq7V.h@cluster0.p7cm2.mongodb.net/test?retryWrites=true&w=majority";
 
-const app = express();
+mongoose.connect(uri, {useNewUrlParser: true, useUnifiedTopology: true})
+  .then(() => console.log('Connexion à MongoDB réussie !'))
+  .catch(() => console.log('Connexion à MongoDB échouée !'));
+
+  const app = express();
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
