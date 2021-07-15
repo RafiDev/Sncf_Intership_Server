@@ -9,32 +9,9 @@ module.exports = (app) => {
     var multer = require('multer');
     var multerS3 = require('multer-s3');
     var fs = require('fs');
-    //var https = require('https');
     var downloadsFolder = require('downloads-folder');
     var xlstojson = require("xls-to-json");
     var xlsxtojson = require("xlsx-to-json-lc");
-
-    /*
-    var spacesEndpoint = new aws.Endpoint('fra1.digitaloceanspaces.com Copy');
-    var s3 = new aws.S3({
-        endpoint: spacesEndpoint
-    });
-
-    var upload = multer({ 
-        storage: multerS3({
-            s3: s3,
-            bucket: 'sncf-intership',
-            acl:'public-read',
-            key: (req, file, cb) => {
-                cb(null, file.fieldname + '-' + Date.now() + '.' + file.originalname.split('.')[file.originalname.split('.').length -1]);
-            }
-        }), fileFilter : function(req, file, callback) { 
-            if (['xls', 'xlsx'].indexOf(file.originalname.split('.')[file.originalname.split('.').length-1]) === -1) {
-                return callback(new Error('Wrong extension type'));
-            }
-            callback(null, true);
-        }
-    });*/
 
     var storage = multer.diskStorage({
         destination: function(req, file, cb) {
@@ -511,8 +488,8 @@ module.exports = (app) => {
                         },
                         "Statut par hiérarchie": getInfoStateRames.getInfoStateRames(result),
                         "Autre libelle": {
-                            "liste des autres systèmes": otherSysteme,
-                            "nombre des autres systèmes": nbOtherSysteme - 1
+                            "liste des autres libelles": otherSysteme,
+                            "nombre des autres libelles": nbOtherSysteme - 1
                         },
                         "Liste signalement rexmat": rameLibelle,
                         "Hiérarchie de la flotte par date de création": getHierarchieByDayForWeek.getHierarchieByDayForWeek(result),
