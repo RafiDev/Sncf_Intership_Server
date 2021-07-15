@@ -1,4 +1,7 @@
 const getInfoStateRames = require('../function/rexmat/getStateRames');
+const getHierarchieByDayForWeek = require('../function/rexmat/getHierarchieByDayForWeek');
+const getStatutbyDayForWeek = require('../function/rexmat/getStatutByDayForWeek');
+const getSystemByDayForWeek = require('../function/rexmat/getSystemByDayForWeek');
 const Rexmat = require('../models/rexmatModel');
 
 module.exports = (app) => {
@@ -6,10 +9,12 @@ module.exports = (app) => {
     var multer = require('multer');
     var multerS3 = require('multer-s3');
     var fs = require('fs');
-    var https = require('https');
+    //var https = require('https');
     var downloadsFolder = require('downloads-folder');
     var xlstojson = require("xls-to-json");
+    var xlsxtojson = require("xlsx-to-json-lc");
 
+    /*
     var spacesEndpoint = new aws.Endpoint('fra1.digitaloceanspaces.com Copy');
     var s3 = new aws.S3({
         endpoint: spacesEndpoint
@@ -29,24 +34,54 @@ module.exports = (app) => {
             }
             callback(null, true);
         }
+    });*/
+
+    var storage = multer.diskStorage({
+        destination: function(req, file, cb) {
+            cb(null, downloadsFolder()) 
+        },
+        filename: function(req, file, cb) {
+            var datetimestamp = Date.now();
+            cb(null, file.fieldname + '-' + datetimestamp + '.' + file.originalname.split('.')[file.originalname.split('.').length -1])
+        }
     });
 
-    app.post('/rexmat', upload.array('file', 1), function(req, response) {
-        https.get(req.files[0].location, (res, err) => {
-            const path = `${downloadsFolder()}/${req.files[0].key}`;
-            const filePath = fs.createWriteStream(path);
-            res.pipe(filePath);
-            filePath.on('finish',() => {
-                filePath.close();
-                console.log('Download Completed');
-                xlstojson({
-                    input: filePath.path,
+    var upload = multer({
+        storage: storage,
+        fileFilter: (req, file, cb) => {
+            if (['xls', 'xlsx'].indexOf(file.originalname.split('.')[file.originalname.split('.').length-1]) === -1) {
+                return cb(new Error('Wrong extension type'));
+            }
+            cb(null, true);
+        }
+    }).single('file');
+
+
+    app.post('/rexmat', (req, res) => {
+        var exceltojson;
+        upload(req, res, function(err){
+            if (err) {
+                res.json({error_code:1,err_desc:err});
+                return;
+            }
+            if (!req.file) {
+                res.json({error_code:1,err_desc:"No file passed"});
+                return;
+            }
+            if(req.file.originalname.split('.')[req.file.originalname.split('.').length-1] === 'xlsx'){
+                exceltojson = xlsxtojson;
+            } else {
+                exceltojson = xlstojson;
+            } 
+            try {
+                exceltojson({
+                    input: req.file.path,
                     output: null,
-                    lowerCaseHeader: false
-                }, (err, result) => {
-                    if (err)
-                        return response.json({error_code: 1, err_desc: err, data: null});
-                    
+                    lowerCaseHeaders: true
+                }, function(err, result) {
+                    if (err) {
+                        return res.json({error_code:1,err_desc:err, data: null});
+                    }
                     var rames = [];
                     var libelle = [];
                     var rameLibelle = [];
@@ -417,7 +452,6 @@ module.exports = (app) => {
                         "Pupitre": PUPITRE_H1, "Sonorisation": SONO_H1,
                         "Compresseur": COMPRESSEUR_H1, "STMAutonome": STMAutonome_H1,
                         "Coupleur": COUPLEUR_H1,
-                        "Nombre de SET en H1": SET_H1, "Nombre de CBM en H1": CBM_H1
                     };
 
                     var data_H2 = {
@@ -432,7 +466,6 @@ module.exports = (app) => {
                         "Pupitre": PUPITRE_H2, "Sonorisation": SONO_H2,
                         "Compresseur": COMPRESSEUR_H2, "STMAutonome": STMAutonome_H2,
                         "Coupleur": COUPLEUR_H2,
-                        "Nombre de SET en H2": SET_H2, "Nombre de CBM en H2": CBM_H2
                     };
 
                     var data_H3 = {
@@ -447,7 +480,6 @@ module.exports = (app) => {
                         "Pupitre": PUPITRE_H3, "Sonorisation": SONO_H3,
                         "Compresseur": COMPRESSEUR_H3, "STMAutonome": STMAutonome_H3,
                         "Coupleur": COUPLEUR_H3,
-                        "Nombre de SET en H3": SET_H3, "Nombre de CBM en H3": CBM_H3
                     };
 
                     var data_H4 = {
@@ -462,7 +494,6 @@ module.exports = (app) => {
                         "Pupitre": PUPITRE_H4, "Sonorisation": SONO_H4,
                         "Compresseur": COMPRESSEUR_H4, "STMAutonome": STMAutonome_H4,
                         "Coupleur": COUPLEUR_H4,
-                        "Nombre de SET en H4": SET_H4, "Nombre de CBM en H4": CBM_H4
                     };
 
                     var data = {
@@ -473,52 +504,45 @@ module.exports = (app) => {
                             "H4": H4
                         },
                         "Signalement par hiérarchie": {
-                            "systeme en H1": data_H1,
-                            "systeme en H2": data_H2,
-                            "systeme en H3": data_H3,
-                            "systeme en H4": data_H4
+                            "H1": data_H1,
+                            "H2": data_H2,
+                            "H3": data_H3,
+                            "H4": data_H4
                         },
                         "Statut par hiérarchie": getInfoStateRames.getInfoStateRames(result),
                         "Autre libelle": {
                             "liste des autres systèmes": otherSysteme,
                             "nombre des autres systèmes": nbOtherSysteme - 1
                         },
-                        "Liste signalement rexmat": rameLibelle
+                        "Liste signalement rexmat": rameLibelle,
+                        "Hiérarchie de la flotte par date de création": getHierarchieByDayForWeek.getHierarchieByDayForWeek(result),
+                        "Statut par hiérarchie par date de création": getStatutbyDayForWeek.getHierarchieByDayForWeek(result),
+                        "Systeme par hiérarchie par date de création": getSystemByDayForWeek.getSystemByDayForWeek(result)
                     };
+                    
                     const rexmat = new Rexmat();
                     rexmat.type = req.body.time;
-                    rexmat.date = req.body.dateStart.slice(0, 15).concat(' to ', req.body.dateEnd.slice(0, 15));
+                    rexmat.date = req.body.dateStart.slice(0, 15).concat(' => ', req.body.dateEnd.slice(0, 15));
                     rexmat.data = data;
                     rexmat.save()
-                    response.json(data);
+                    res.json(data);
+                    console.log('Data send to client');
                 });
-            })
+            } catch (e) {
+                res.json({error_code:1,err_desc:"Corupted excel file"});
+            }
         });
     });
-
+    
     app.get('/getDataRexmatWeek', (req, res) => {
         Rexmat.find({ type: 'semaine' }, (err, result) => {
             if (err) res.send(err);
             let data = JSON.stringify(result);
-            fs.writeFile(`${downloadsFolder}/rexmatWeek.json`, data, (err) => {
+            fs.writeFile(`${downloadsFolder()}/rexmatWeek.json`, data, (err) => {
                 if (err) throw err;
-                    console.log('Data written to file');
+                console.log('Data written to file');
             });
-            console.log(result);
-            //res.send(result);
-        });
-    });
-
-    app.get('/getDataRexmatMonth', (req, res) => {
-        Rexmat.find({ type: 'mois' }, (err, result) => {
-            if (err) res.send(err);
-            let data = JSON.stringify(result);
-            fs.writeFile('rexmatMonth.json', data, (err) => {
-                if (err) throw err;
-                    console.log('Data written to file');
-            });
-            console.log(result);
-            //res.send(result);
+            res.send(result);
         });
     });
 }
