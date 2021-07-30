@@ -1,7 +1,8 @@
-const getInfoStateRames = require('../function/rexmat/getStateRames');
+const testRex = require('../function/rexmat/getStateRames');
 const getHierarchieByDayForWeek = require('../function/rexmat/getHierarchieByDayForWeek');
 const getStatutbyDayForWeek = require('../function/rexmat/getStatutByDayForWeek');
 const getSystemByDayForWeek = require('../function/rexmat/getSystemByDayForWeek');
+const getRameInfo = require('../function/rexmat/getRameInfo');
 const Rexmat = require('../models/rexmatModel');
 
 module.exports = (app) => {
@@ -486,15 +487,16 @@ module.exports = (app) => {
                             "H3": data_H3,
                             "H4": data_H4
                         },
-                        "Statut par hiérarchie": getInfoStateRames.getInfoStateRames(result),
+                        "Statut par hiérarchie": testRex.getInfoStateRames(result),
                         "Autre libelle": {
                             "liste des autres libelles": otherSysteme,
                             "nombre des autres libelles": nbOtherSysteme - 1
                         },
                         "Liste signalement rexmat": rameLibelle,
                         "Hiérarchie de la flotte par date de création": getHierarchieByDayForWeek.getHierarchieByDayForWeek(result),
-                        "Statut par hiérarchie par date de création": getStatutbyDayForWeek.getHierarchieByDayForWeek(result),
-                        "Systeme par hiérarchie par date de création": getSystemByDayForWeek.getSystemByDayForWeek(result)
+                        "Statut par hiérarchie par date de création": getStatutbyDayForWeek.getStatutByDayForWeek(result),
+                        "Systeme par hiérarchie par date de création": getSystemByDayForWeek.getSystemByDayForWeek(result),
+                        "Nombre de signalements par rame de la flotte L/J": getRameInfo.getRameInfo(result)
                     };
                     
                     const rexmat = new Rexmat();

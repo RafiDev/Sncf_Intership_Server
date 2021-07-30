@@ -1355,7 +1355,7 @@ function weekH4ByLigneJ(rames, statut, libelle, date, info) {
     return(data);
 }
 
-exports.getHierarchieByDayForWeek = function(array) {
+exports.getStatutByDayForWeek = function(array) {
     var statut = [];
     var libelle = [];
     var date = [];
@@ -1376,7 +1376,7 @@ exports.getHierarchieByDayForWeek = function(array) {
     }
 
     var weekData = {
-        'L/j': {
+        'L/J': {
             'H1': weekH1(statut, libelle, date, info),
             'H2': weekH2(statut, libelle, date, info),
             'H3': weekH3(statut, libelle, date, info),

@@ -409,7 +409,7 @@ exports.getHierarchieByDayForWeek = function(array) {
     }
 
     var weekData = {
-        'L/j': {
+        'L/J': {
             'H1': weekH1(libelle, date, info),
             'H2': weekH2(libelle, date, info),
             'H3': weekH3(libelle, date, info),

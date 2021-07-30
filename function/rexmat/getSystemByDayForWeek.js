@@ -2,7 +2,7 @@ function isUnique(item, position, array) {
     return array.indexOf(item) === position;
 }
 
-function weekH1(systeme, date, info) {
+function weekH1ByDate(systeme, date, info) {
     var weekBS = {};
     var objBS = {};
     var nbBS = 0;
@@ -295,7 +295,7 @@ function weekH1(systeme, date, info) {
     return(data);
 }
 
-function weekH2(systeme, date, info) {
+function weekH2ByDate(systeme, date, info) {
     var weekBS = {};
     var objBS = {};
     var nbBS = 0;
@@ -588,7 +588,7 @@ function weekH2(systeme, date, info) {
     return(data);
 }
 
-function weekH3(systeme, date, info) {
+function weekH3ByDate(systeme, date, info) {
     var weekBS = {};
     var objBS = {};
     var nbBS = 0;
@@ -881,7 +881,7 @@ function weekH3(systeme, date, info) {
     return(data);
 }
 
-function weekH4(systeme, date, info) {
+function weekH4ByDate(systeme, date, info) {
     var weekBS = {};
     var objBS = {};
     var nbBS = 0;
@@ -1174,7 +1174,7 @@ function weekH4(systeme, date, info) {
     return(data);
 }
 
-function weekH1ByLigneL(rames, systeme, date, info) {
+function weekH1ByLigneLByDate(rames, systeme, date, info) {
     var weekBS = {};
     var objBS = {};
     var nbBS = 0;
@@ -1481,7 +1481,7 @@ function weekH1ByLigneL(rames, systeme, date, info) {
     return(data);
 }
 
-function weekH2ByLigneL(rames, systeme, date, info) {
+function weekH2ByLigneLByDate(rames, systeme, date, info) {
     var weekBS = {};
     var objBS = {};
     var nbBS = 0;
@@ -1788,7 +1788,7 @@ function weekH2ByLigneL(rames, systeme, date, info) {
     return(data);
 }
 
-function weekH3ByLigneL(rames, systeme, date, info) {
+function weekH3ByLigneLByDate(rames, systeme, date, info) {
     var weekBS = {};
     var objBS = {};
     var nbBS = 0;
@@ -2095,7 +2095,7 @@ function weekH3ByLigneL(rames, systeme, date, info) {
     return(data);
 }
 
-function weekH4ByLigneL(rames, systeme, date, info) {
+function weekH4ByLigneLByDate(rames, systeme, date, info) {
     var weekBS = {};
     var objBS = {};
     var nbBS = 0;
@@ -2402,8 +2402,7 @@ function weekH4ByLigneL(rames, systeme, date, info) {
     return(data);
 }
 
-
-function weekH1ByLigneJ(rames, systeme, date, info) {
+function weekH1ByLigneJByDate(rames, systeme, date, info) {
     var weekBS = {};
     var objBS = {};
     var nbBS = 0;
@@ -2707,7 +2706,7 @@ function weekH1ByLigneJ(rames, systeme, date, info) {
     return(data);
 }
 
-function weekH2ByLigneJ(rames, systeme, date, info) {
+function weekH2ByLigneJByDate(rames, systeme, date, info) {
     var weekBS = {};
     var objBS = {};
     var nbBS = 0;
@@ -3011,7 +3010,7 @@ function weekH2ByLigneJ(rames, systeme, date, info) {
     return(data);
 }
 
-function weekH3ByLigneJ(rames, systeme, date, info) {
+function weekH3ByLigneJByDate(rames, systeme, date, info) {
     var weekBS = {};
     var objBS = {};
     var nbBS = 0;
@@ -3315,7 +3314,7 @@ function weekH3ByLigneJ(rames, systeme, date, info) {
     return(data);
 }
 
-function weekH4ByLigneJ(rames, systeme, date, info) {
+function weekH4ByLigneJByDate(rames, systeme, date, info) {
     var weekBS = {};
     var objBS = {};
     var nbBS = 0;
@@ -3656,23 +3655,23 @@ exports.getSystemByDayForWeek = function(array) {
 
 
     var weekData = {
-        'L/j': {
-            'H1': weekH1(systeme, date, info),
-            'H2': weekH2(systeme, date, info),
-            'H3': weekH3(systeme, date, info),
-            'H4': weekH4(systeme, date, info),
+        'L/J': {
+            'H1': weekH1ByDate(systeme, date, info),
+            'H2': weekH2ByDate(systeme, date, info),
+            'H3': weekH3ByDate(systeme, date, info),
+            'H4': weekH4ByDate(systeme, date, info),
         },
         'L': {
-            'H1': weekH1ByLigneL(rames, systeme, date, info),
-            'H2': weekH2ByLigneL(rames, systeme, date, info),
-            'H3': weekH3ByLigneL(rames, systeme, date, info),
-            'H4': weekH4ByLigneL(rames, systeme, date, info),
+            'H1': weekH1ByLigneLByDate(rames, systeme, date, info),
+            'H2': weekH2ByLigneLByDate(rames, systeme, date, info),
+            'H3': weekH3ByLigneLByDate(rames, systeme, date, info),
+            'H4': weekH4ByLigneLByDate(rames, systeme, date, info),
         },
         'J': {
-            'H1': weekH1ByLigneJ(rames, systeme, date, info),
-            'H2': weekH2ByLigneJ(rames, systeme, date, info),
-            'H3': weekH3ByLigneJ(rames, systeme, date, info),
-            'H4': weekH4ByLigneJ(rames, systeme, date, info),
+            'H1': weekH1ByLigneJByDate(rames, systeme, date, info),
+            'H2': weekH2ByLigneJByDate(rames, systeme, date, info),
+            'H3': weekH3ByLigneJByDate(rames, systeme, date, info),
+            'H4': weekH4ByLigneJByDate(rames, systeme, date, info),
         }
     }
 
